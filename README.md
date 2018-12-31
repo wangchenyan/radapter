@@ -90,7 +90,7 @@ class ImageViewHolder(itemView: View) : RViewHolder<Image>(itemView) {
 
 |方法/变量|返回值/类型|备注|
 |:-:|:-:|:-:|
-| context | 上下文 |  |
+| context | Context | 上下文 |
 | adapter() | RAdapter | 适配器 |
 | data() | T | 泛型数据 |
 | position() | int | 当前位置，调用 adapter 的 `notifyItemInserted` 或 `notifyItemRemoved` 后会自动更新位置 |
