@@ -35,6 +35,15 @@ dependencies {
 }
 ```
 
+### 混淆
+该库已经默认添加了混淆配置，使用 AAR 依赖是不需要特殊处理的，如果使用 Jar 依赖，需要手动添加以下配置
+
+```
+-keepclassmembers class * extends me.wcy.radapter.RViewHolder {
+    public <init>(android.view.View);
+}
+```
+
 ## 介绍
 原始的使用 Recycler View 的方式我就不赘述了，总之是比较繁琐的，我直接介绍 radapter 如何使用。
 
