@@ -8,7 +8,7 @@
 
 2018年对大部分人来说是萧条的一年，我在此祝愿大家2019年红红火火，升职加薪！
 
-不知道还有没有人记得前一篇 [打造一个通用的 RecyclerView Adapter](https://www.jianshu.com/p/89933f59428e)，这个版本算是比较初级的，因此也没有上传到仓库，经过自己一年来的使用，不断完善，终于推出 2.0 版本了，并且也上传了 JitPack 仓库，下面我就来介绍一下这个 2.0 版本有什么不同吧。
+不知道还有没有人记得前一篇 [打造一个通用的 RecyclerView Adapter](https://juejin.im/post/5c3810eb6fb9a049dc027510)，这个版本算是比较初级的，因此也没有上传到仓库，经过自己一年来的使用，不断完善，终于推出 2.0 版本了，并且也上传了 JitPack 仓库，下面我就来介绍一下这个 2.0 版本有什么不同吧。
 
 ## 使用
 
@@ -31,7 +31,7 @@ allprojects {
 
 ```
 dependencies {
-    implementation 'com.github.wangchenyan:radapter:2.0'
+    implementation 'com.github.wangchenyan:radapter:2.0.1'
 }
 ```
 
