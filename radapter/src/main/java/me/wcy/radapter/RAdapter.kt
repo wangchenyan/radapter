@@ -20,25 +20,47 @@ class RAdapter(private val dataList: MutableList<*>) : RecyclerView.Adapter<RVie
         registerAdapterDataObserver(DataObserver())
     }
 
+    /**
+     * 注册 ViewHolder
+     *
+     * @param model 数据类
+     * @param viewHolder ViewHolder
+     * @param layoutResId 指定布局文件
+     */
     fun <T> register(model: Class<T>, viewHolder: Class<out RViewHolder<T>>, layoutResId: Int = 0): RAdapter {
         register(model, DefaultConverter(viewHolder, layoutResId))
         return this
     }
 
+    /**
+     * 注册 ViewHolder
+     *
+     * @param model 数据类
+     * @param converter 数据到 ViewHolder 的转换器
+     */
     fun <T> register(model: Class<T>, converter: RConverter<T>): RAdapter {
         typePool.register(model, converter)
         return this
     }
 
+    /**
+     * 设置额外参数，可在 ViewHolder 中读取 ViewHolder.getExtra(key)
+     */
     fun putExtra(key: Int, value: Any): RAdapter {
         extras.put(key, value)
         return this
     }
 
+    /**
+     * 获取额外参数
+     */
     fun getExtra(key: Int): Any? {
         return extras.get(key)
     }
 
+    /**
+     * 获取数据列表
+     */
     fun getDataList(): MutableList<*> {
         return dataList
     }
@@ -90,7 +112,7 @@ class RAdapter(private val dataList: MutableList<*>) : RecyclerView.Adapter<RVie
     }
 
     /**
-     * 数据改变是通知 ViewHolder position 过期
+     * 数据改变时通知 ViewHolder position 过期
      */
     private inner class DataObserver : RecyclerView.AdapterDataObserver() {
         override fun onItemRangeRemoved(positionStart: Int, itemCount: Int) {
@@ -109,6 +131,9 @@ class RAdapter(private val dataList: MutableList<*>) : RecyclerView.Adapter<RVie
         }
     }
 
+    /**
+     * 数据顺序改变，通知 ViewHolder position 过期
+     */
     private fun notifyVHPosExpired() {
         for (vh in vhList) {
             vh.setPosExpired()

@@ -1,6 +1,8 @@
 package me.wcy.radapter
 
 /**
+ * 一个列表 item 的实体，包含数据类型和 ViewHolder
+ *
  * Created by wangchenyan on 2018/9/21.
  */
 internal class RType<T>(
