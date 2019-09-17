@@ -103,11 +103,13 @@ class RAdapter(private val dataList: MutableList<*>) : RecyclerView.Adapter<RVie
 
     override fun onViewAttachedToWindow(holder: RViewHolder<*>) {
         super.onViewAttachedToWindow(holder)
+        holder.onViewAttachedToWindow()
         vhList.add(holder)
     }
 
     override fun onViewDetachedFromWindow(holder: RViewHolder<*>) {
         super.onViewDetachedFromWindow(holder)
+        holder.onViewDetachedFromWindow()
         vhList.remove(holder)
     }
 
