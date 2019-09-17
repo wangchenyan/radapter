@@ -67,9 +67,9 @@ abstract class RViewHolder<T>(itemView: View) : RecyclerView.ViewHolder(itemView
         return adapter?.getExtra(key)
     }
 
-    fun onViewAttachedToWindow() {
+    open fun onViewAttachedToWindow() {
     }
 
-    fun onViewDetachedFromWindow() {
+    open fun onViewDetachedFromWindow() {
     }
 }
