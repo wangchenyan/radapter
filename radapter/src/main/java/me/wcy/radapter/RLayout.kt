@@ -1,6 +1,6 @@
 package me.wcy.radapter
 
-import android.support.annotation.LayoutRes
+import androidx.annotation.LayoutRes
 
 /**
  * ViewHolder 设置布局文件的注解
