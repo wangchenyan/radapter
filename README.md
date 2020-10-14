@@ -1,4 +1,7 @@
 # radapter
+
+[![](https://jitpack.io/v/wangchenyan/radapter.svg)](https://jitpack.io/#wangchenyan/radapter)
+
 使用 radapter，你可以方便的构造多种类型的列表视图。
 
 ![](https://raw.githubusercontent.com/wangchenyan/radapter/master/art/recycler-view.jpg)
@@ -31,7 +34,7 @@ allprojects {
 
 ```
 dependencies {
-    implementation 'com.github.wangchenyan:radapter:2.0.1'
+    implementation 'com.github.wangchenyan:radapter:2.2'
 }
 ```
 
