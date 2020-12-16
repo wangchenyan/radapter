@@ -1,16 +1,12 @@
 package me.wcy.radapter.simple.viewholder
 
-import android.view.View
-import kotlinx.android.synthetic.main.view_holder_text_1.view.*
-import me.wcy.radapter.RLayout
-import me.wcy.radapter.RViewHolder
-import me.wcy.radapter.simple.R
+import me.wcy.radapter.simple.databinding.ViewHolderText1Binding
 import me.wcy.radapter.simple.model.Text
+import me.wcy.radapter3.RViewHolder
 
-@RLayout(R.layout.view_holder_text_1)
-class TextViewHolder1(itemView: View) : RViewHolder<Text>(itemView) {
+class TextViewHolder1(private val viewBinding: ViewHolderText1Binding) : RViewHolder<ViewHolderText1Binding, Text>(viewBinding) {
 
     override fun refresh() {
-        itemView.text1.text = data().text
+        viewBinding.text1.text = data().text
     }
 }

@@ -1,16 +1,17 @@
-package me.wcy.radapter
+package me.wcy.radapter3
 
-import androidx.recyclerview.widget.RecyclerView
 import android.util.Log
 import android.util.SparseArray
 import android.view.LayoutInflater
-import android.view.View
 import android.view.ViewGroup
+import androidx.recyclerview.widget.RecyclerView
+import androidx.viewbinding.ViewBinding
+import java.lang.reflect.ParameterizedType
 
-class RAdapter(private val dataList: MutableList<*>) : RecyclerView.Adapter<RViewHolder<*>>() {
+class RAdapter(private val dataList: MutableList<*>) : RecyclerView.Adapter<RViewHolder<*, *>>() {
     private val typePool = RTypeManager()
     private var extras = SparseArray<Any>()
-    private var vhList = mutableListOf<RViewHolder<*>>()
+    private var vhList = mutableListOf<RViewHolder<*, *>>()
 
     companion object {
         private const val TAG = "RAdapter"
@@ -23,12 +24,11 @@ class RAdapter(private val dataList: MutableList<*>) : RecyclerView.Adapter<RVie
     /**
      * 注册 ViewHolder
      *
-     * @param model 数据类
      * @param viewHolder ViewHolder
-     * @param layoutResId 指定布局文件
      */
-    fun <T> register(model: Class<T>, viewHolder: Class<out RViewHolder<T>>, layoutResId: Int = 0): RAdapter {
-        register(model, DefaultConverter(viewHolder, layoutResId))
+    inline fun <VH : ViewBinding, reified T> register(viewHolder: Class<out RViewHolder<VH, T>>): RAdapter {
+        val dataClass = T::class.java
+        register(dataClass) { viewHolder }
         return this
     }
 
@@ -38,7 +38,7 @@ class RAdapter(private val dataList: MutableList<*>) : RecyclerView.Adapter<RVie
      * @param model 数据类
      * @param converter 数据到 ViewHolder 的转换器
      */
-    fun <T> register(model: Class<T>, converter: RConverter<T>): RAdapter {
+    fun <T> register(model: Class<T>, converter: (data: T) -> Class<out RViewHolder<*, T>>): RAdapter {
         typePool.register(model, converter)
         return this
     }
@@ -65,20 +65,23 @@ class RAdapter(private val dataList: MutableList<*>) : RecyclerView.Adapter<RVie
         return dataList
     }
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RViewHolder<*> {
+    @Suppress("UNCHECKED_CAST")
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RViewHolder<*, *> {
         val clazz = typePool.getVHClass(viewType)
-        val resId = typePool.getLayoutResId(viewType)
-        if (resId <= 0) {
-            throw IllegalStateException("can not find view holder layout, have you set?")
-        }
-        val view = LayoutInflater.from(parent.context).inflate(resId, parent, false)
-        val constructor = clazz.getConstructor(View::class.java)
-        val viewHolder = constructor.newInstance(view)
+        val viewHolder = createViewHolder(clazz as Class<RViewHolder<ViewBinding, Any>>, parent)
         viewHolder.setAdapter(this)
         return viewHolder
     }
 
-    override fun onBindViewHolder(holder: RViewHolder<*>, position: Int) {
+    private inline fun <reified VB : ViewBinding, T> createViewHolder(vhClass: Class<RViewHolder<VB, T>>, parent: ViewGroup): RViewHolder<VB, T> {
+        val bindingClass = (vhClass.genericSuperclass as ParameterizedType).actualTypeArguments[0] as Class<*>
+        val inflateMethod = bindingClass.getMethod("inflate", LayoutInflater::class.java, ViewGroup::class.java, Boolean::class.javaPrimitiveType)
+        val viewBinding = inflateMethod.invoke(null, LayoutInflater.from(parent.context), parent, false) as VB
+        val constructor = vhClass.getConstructor(bindingClass)
+        return constructor.newInstance(viewBinding)
+    }
+
+    override fun onBindViewHolder(holder: RViewHolder<*, *>, position: Int) {
         try {
             holder.position = position
             holder.bindData(dataList[position])
@@ -101,13 +104,13 @@ class RAdapter(private val dataList: MutableList<*>) : RecyclerView.Adapter<RVie
         return type
     }
 
-    override fun onViewAttachedToWindow(holder: RViewHolder<*>) {
+    override fun onViewAttachedToWindow(holder: RViewHolder<*, *>) {
         super.onViewAttachedToWindow(holder)
         holder.onViewAttachedToWindow()
         vhList.add(holder)
     }
 
-    override fun onViewDetachedFromWindow(holder: RViewHolder<*>) {
+    override fun onViewDetachedFromWindow(holder: RViewHolder<*, *>) {
         super.onViewDetachedFromWindow(holder)
         holder.onViewDetachedFromWindow()
         vhList.remove(holder)

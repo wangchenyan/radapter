@@ -5,14 +5,12 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import kotlinx.android.synthetic.main.activity_main.*
-import me.wcy.radapter.RAdapter
-import me.wcy.radapter.RConverter
-import me.wcy.radapter.RViewHolderWrap
 import me.wcy.radapter.simple.model.Image
 import me.wcy.radapter.simple.model.Text
 import me.wcy.radapter.simple.viewholder.ImageViewHolder
-import me.wcy.radapter.simple.viewholder.TextViewHolder2
 import me.wcy.radapter.simple.viewholder.TextViewHolder1
+import me.wcy.radapter.simple.viewholder.TextViewHolder2
+import me.wcy.radapter3.RAdapter
 
 class MainActivity : AppCompatActivity() {
 
@@ -35,16 +33,14 @@ class MainActivity : AppCompatActivity() {
         dataList.add(Text("太阿", 1))
 
         val adapter = RAdapter(dataList)
-        adapter.register(Image::class.java, ImageViewHolder::class.java)
-        adapter.register(Text::class.java, object : RConverter<Text>() {
-            override fun convert(data: Text): RViewHolderWrap<Text> {
-                return when (data.style) {
-                    1 -> RViewHolderWrap(TextViewHolder1::class.java)
-                    2 -> RViewHolderWrap(TextViewHolder2::class.java, R.layout.view_holder_text_2)
-                    else -> RViewHolderWrap(TextViewHolder2::class.java, R.layout.view_holder_text_2)
-                }
+        adapter.register(ImageViewHolder::class.java)
+        adapter.register(Text::class.java) { data ->
+            when (data.style) {
+                1 -> TextViewHolder1::class.java
+                2 -> TextViewHolder2::class.java
+                else -> TextViewHolder2::class.java
             }
-        })
+        }
 
         adapter.putExtra(100, "any extra")
 

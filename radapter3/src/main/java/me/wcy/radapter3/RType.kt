@@ -1,4 +1,4 @@
-package me.wcy.radapter
+package me.wcy.radapter3
 
 /**
  * 一个列表 item 的实体，包含数据类型和 ViewHolder
@@ -7,7 +7,7 @@ package me.wcy.radapter
  */
 internal class RType<T>(
         internal val model: Class<T>,
-        internal val converter: RConverter<T>) {
+        internal val converter: (data: T) -> Class<out RViewHolder<*, T>>) {
 
     override fun hashCode(): Int {
         return model.hashCode()

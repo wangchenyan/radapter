@@ -1,4 +1,4 @@
-package me.wcy.radapter
+package me.wcy.radapter3
 
 /**
  * 列表 item 实体管理器
@@ -7,12 +7,12 @@ package me.wcy.radapter
  */
 internal class RTypeManager {
     private val typeList = mutableListOf<RType<*>>()
-    private val vhList = mutableListOf<RViewHolderWrap<*>>()
+    private val vhClassList = mutableListOf<Class<out RViewHolder<*, *>>>()
 
     /**
      * 注册一个实体
      */
-    fun <T> register(model: Class<T>, converter: RConverter<T>) {
+    fun <T> register(model: Class<T>, converter: (data: T) -> Class<out RViewHolder<*, T>>) {
         val type = RType(model, converter)
         val index = typeList.indexOf(type)
         if (index >= 0) {
@@ -30,10 +30,10 @@ internal class RTypeManager {
             return -1
         }
         val clazz = data.javaClass
-        var converter: RConverter<*>? = null
+        var converter: ((data: Any) -> Class<out RViewHolder<*, Any>>)? = null
         for (type in typeList) {
             if (clazz == type.model) {
-                converter = type.converter
+                converter = type.converter as (data: Any) -> Class<out RViewHolder<*, Any>>
                 break
             }
         }
@@ -41,7 +41,7 @@ internal class RTypeManager {
             // 尝试查找子类
             for (type in typeList) {
                 if (type.model.isAssignableFrom(clazz)) {
-                    converter = type.converter
+                    converter = type.converter as (data: Any) -> Class<out RViewHolder<*, Any>>
                     break
                 }
             }
@@ -49,24 +49,17 @@ internal class RTypeManager {
         if (converter == null) {
             return -1
         }
-        val vhWrap = converter.convert(data)
-        if (!vhList.contains(vhWrap)) {
-            vhList.add(vhWrap)
+        val holderClass = converter.invoke(data)
+        if (!vhClassList.contains(holderClass)) {
+            vhClassList.add(holderClass)
         }
-        return vhList.indexOf(vhWrap)
+        return vhClassList.indexOf(holderClass)
     }
 
     /**
      * 获取 ViewHolder class
      */
-    fun getVHClass(viewType: Int): Class<out RViewHolder<*>> {
-        return vhList[viewType].getViewHolder()
-    }
-
-    /**
-     * 获取 ViewHolder 布局
-     */
-    fun getLayoutResId(viewType: Int): Int {
-        return vhList[viewType].getLayoutResId()
+    fun getVHClass(viewType: Int): Class<out RViewHolder<*, *>> {
+        return vhClassList[viewType]
     }
 }

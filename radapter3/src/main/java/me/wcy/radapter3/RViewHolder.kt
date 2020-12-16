@@ -1,17 +1,17 @@
-package me.wcy.radapter
+package me.wcy.radapter3
 
 import android.content.Context
 import androidx.recyclerview.widget.RecyclerView
-import android.view.View
+import androidx.viewbinding.ViewBinding
 
 /**
  * ViewHolder 基类
  */
-abstract class RViewHolder<T>(itemView: View) : RecyclerView.ViewHolder(itemView) {
-    protected val context: Context = itemView.context
-    private var adapter: RAdapter? = null
+abstract class RViewHolder<VB : ViewBinding, T>(viewBinding: VB) : RecyclerView.ViewHolder(viewBinding.root) {
+    protected val context: Context = viewBinding.root.context
+    private lateinit var adapter: RAdapter
     private var data: T? = null
-    private var position: Int? = 0
+    private var rPosition = 0
     private var isPosExpired = false
 
     internal fun setAdapter(adapter: RAdapter) {
@@ -19,9 +19,10 @@ abstract class RViewHolder<T>(itemView: View) : RecyclerView.ViewHolder(itemView
     }
 
     internal fun setPosition(position: Int) {
-        this.position = position
+        this.rPosition = position
     }
 
+    @Suppress("UNCHECKED_CAST")
     internal fun bindData(data: Any?) {
         this.data = data as T
     }
@@ -39,7 +40,7 @@ abstract class RViewHolder<T>(itemView: View) : RecyclerView.ViewHolder(itemView
      * 获取 adapter
      */
     protected fun adapter(): RAdapter {
-        return adapter!!
+        return adapter
     }
 
     /**
@@ -54,17 +55,17 @@ abstract class RViewHolder<T>(itemView: View) : RecyclerView.ViewHolder(itemView
      */
     protected fun position(): Int {
         if (isPosExpired) {
-            position = adapter().getDataList().indexOf(data())
+            rPosition = adapter().getDataList().indexOf(data())
             isPosExpired = false
         }
-        return position!!
+        return rPosition
     }
 
     /**
      * 获取 adapter.putExtra 设置的额外参数
      */
     protected fun getExtra(key: Int): Any? {
-        return adapter?.getExtra(key)
+        return adapter.getExtra(key)
     }
 
     open fun onViewAttachedToWindow() {

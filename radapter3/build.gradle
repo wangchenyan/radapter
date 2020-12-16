@@ -16,7 +16,8 @@ apply plugin: 'com.github.dcendents.android-maven'
 group = 'com.github.wangchenyan'
 
 android {
-    compileSdkVersion 28
+    compileSdkVersion Integer.parseInt(COMPILE_SDK_VERSION)
+    buildToolsVersion BUILD_TOOLS_VERSION
 
     defaultConfig {
         minSdkVersion 9
@@ -24,13 +25,17 @@ android {
         versionCode Integer.parseInt(VERSION_CODE)
         versionName VERSION_NAME
 
-        consumerProguardFiles 'proguard-rules.pro'
+        consumerProguardFiles 'consumer-rules.pro'
+    }
+
+    viewBinding {
+        enabled = true
     }
 }
 
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
+    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
     compileOnly 'androidx.appcompat:appcompat:1.2.0'
     compileOnly 'androidx.recyclerview:recyclerview:1.1.0'
-    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
 }
