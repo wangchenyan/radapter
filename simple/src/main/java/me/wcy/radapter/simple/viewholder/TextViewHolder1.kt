@@ -6,7 +6,7 @@ import me.wcy.radapter3.RViewHolder
 
 class TextViewHolder1(private val viewBinding: ViewHolderText1Binding) : RViewHolder<ViewHolderText1Binding, Text>(viewBinding) {
 
-    override fun refresh() {
-        viewBinding.text1.text = data().text
+    override fun onBindViewHolder() {
+        viewBinding.text1.text = getData().text
     }
 }

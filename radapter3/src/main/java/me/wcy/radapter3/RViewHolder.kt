@@ -1,30 +1,60 @@
 package me.wcy.radapter3
 
 import android.content.Context
-import androidx.recyclerview.widget.RecyclerView
 import androidx.viewbinding.ViewBinding
 
 /**
  * ViewHolder 基类
  */
-abstract class RViewHolder<VB : ViewBinding, T>(viewBinding: VB) : RecyclerView.ViewHolder(viewBinding.root) {
+abstract class RViewHolder<VB : ViewBinding, T>(internal val viewBinding: VB) {
     protected val context: Context = viewBinding.root.context
-    private lateinit var adapter: RAdapter
+    private var adapter: RAdapter? = null
     private var data: T? = null
-    private var rPosition = 0
+    private var position = -1
     private var isPosExpired = false
+
+    /**
+     * 获取 adapter
+     */
+    protected fun getAdapter(): RAdapter {
+        if (adapter == null) {
+            throw IllegalStateException("ViewHolder has not bind adapter!")
+        }
+        return adapter!!
+    }
 
     internal fun setAdapter(adapter: RAdapter) {
         this.adapter = adapter
     }
 
+    /**
+     * 获取 item 在列表中的位置
+     */
+    protected fun getPosition(): Int {
+        if (isPosExpired) {
+            position = getAdapter().getDataList().indexOf(getData())
+            isPosExpired = false
+        }
+        return position
+    }
+
     internal fun setPosition(position: Int) {
-        this.rPosition = position
+        this.position = position
     }
 
     @Suppress("UNCHECKED_CAST")
-    internal fun bindData(data: Any?) {
+    internal fun setData(data: Any?) {
         this.data = data as T
+    }
+
+    /**
+     * 获取数据
+     */
+    protected fun getData(): T {
+        if (data == null) {
+            throw IllegalStateException("ViewHolder has not bind data!")
+        }
+        return data!!
     }
 
     internal fun setPosExpired() {
@@ -34,43 +64,24 @@ abstract class RViewHolder<VB : ViewBinding, T>(viewBinding: VB) : RecyclerView.
     /**
      * 刷新界面
      */
-    abstract fun refresh()
-
-    /**
-     * 获取 adapter
-     */
-    protected fun adapter(): RAdapter {
-        return adapter
-    }
-
-    /**
-     * 获取数据
-     */
-    protected fun data(): T {
-        return data!!
-    }
-
-    /**
-     * 获取 item 在列表中的位置
-     */
-    protected fun position(): Int {
-        if (isPosExpired) {
-            rPosition = adapter().getDataList().indexOf(data())
-            isPosExpired = false
-        }
-        return rPosition
-    }
+    abstract fun onBindViewHolder()
 
     /**
      * 获取 adapter.putExtra 设置的额外参数
      */
     protected fun getExtra(key: Int): Any? {
-        return adapter.getExtra(key)
+        return adapter?.getExtra(key)
     }
 
+    /**
+     * ViewHolder 进入屏幕
+     */
     open fun onViewAttachedToWindow() {
     }
 
+    /**
+     * ViewHolder 离开屏幕
+     */
     open fun onViewDetachedFromWindow() {
     }
 }

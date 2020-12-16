@@ -6,11 +6,11 @@ import me.wcy.radapter3.RViewHolder
 
 class ImageViewHolder(private val viewBinding: ViewHolderImageBinding) : RViewHolder<ViewHolderImageBinding, Image>(viewBinding) {
 
-    override fun refresh() {
+    override fun onBindViewHolder() {
         /**
          * 可以取得 adapter.putExtra() 存放的数据
          */
-        val extra = adapter().getExtra(100)
-        viewBinding.image.setImageResource(data().resId)
+        val extra = getAdapter().getExtra(100)
+        viewBinding.image.setImageResource(getData().resId)
     }
 }
