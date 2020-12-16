@@ -10,7 +10,7 @@ class ImageViewHolder(private val viewBinding: ViewHolderImageBinding) : RViewHo
         /**
          * 可以取得 adapter.putExtra() 存放的数据
          */
-        val extra = getAdapter().getExtra(100)
-        viewBinding.image.setImageResource(getData().resId)
+        val extra = adapter().getExtra(100)
+        viewBinding.image.setImageResource(data().resId)
     }
 }

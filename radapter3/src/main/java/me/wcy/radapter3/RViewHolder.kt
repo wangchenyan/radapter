@@ -16,7 +16,7 @@ abstract class RViewHolder<VB : ViewBinding, T>(internal val viewBinding: VB) {
     /**
      * 获取 adapter
      */
-    protected fun getAdapter(): RAdapter {
+    protected fun adapter(): RAdapter {
         if (adapter == null) {
             throw IllegalStateException("ViewHolder has not bind adapter!")
         }
@@ -30,9 +30,9 @@ abstract class RViewHolder<VB : ViewBinding, T>(internal val viewBinding: VB) {
     /**
      * 获取 item 在列表中的位置
      */
-    protected fun getPosition(): Int {
+    protected fun position(): Int {
         if (isPosExpired) {
-            position = getAdapter().getDataList().indexOf(getData())
+            position = adapter().getDataList().indexOf(data())
             isPosExpired = false
         }
         return position
@@ -50,7 +50,7 @@ abstract class RViewHolder<VB : ViewBinding, T>(internal val viewBinding: VB) {
     /**
      * 获取数据
      */
-    protected fun getData(): T {
+    protected fun data(): T {
         if (data == null) {
             throw IllegalStateException("ViewHolder has not bind data!")
         }
