@@ -6,8 +6,8 @@ package me.wcy.radapter3
  * Created by wangchenyan on 2018/9/21.
  */
 internal class RTypeManager {
-    private val typeList = mutableListOf<RType<*>>()
-    private val vhClassList = mutableListOf<Class<out RViewHolder<*, *>>>()
+    private val typeList by lazy { mutableListOf<RType<*>>() }
+    private val holderClassList by lazy { mutableListOf<Class<out RViewHolder<*, *>>>() }
 
     /**
      * 注册一个实体
@@ -50,16 +50,16 @@ internal class RTypeManager {
             return -1
         }
         val holderClass = converter.invoke(data)
-        if (!vhClassList.contains(holderClass)) {
-            vhClassList.add(holderClass)
+        if (!holderClassList.contains(holderClass)) {
+            holderClassList.add(holderClass)
         }
-        return vhClassList.indexOf(holderClass)
+        return holderClassList.indexOf(holderClass)
     }
 
     /**
      * 获取 ViewHolder class
      */
-    fun getVHClass(viewType: Int): Class<out RViewHolder<*, *>> {
-        return vhClassList[viewType]
+    fun getHolderClass(viewType: Int): Class<out RViewHolder<*, *>> {
+        return holderClassList[viewType]
     }
 }

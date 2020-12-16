@@ -9,16 +9,13 @@ import androidx.viewbinding.ViewBinding
 import java.lang.reflect.ParameterizedType
 
 class RAdapter(private val dataList: MutableList<*>) : RecyclerView.Adapter<RViewHolder<*, *>>() {
-    private val typePool = RTypeManager()
-    private var extras = SparseArray<Any>()
-    private var vhList = mutableListOf<RViewHolder<*, *>>()
+    private val typePool by lazy { RTypeManager() }
+    private val extras by lazy { SparseArray<Any>() }
+    private val dataObserver by lazy { DataObserver() }
+    private val attachedHolderList by lazy { mutableListOf<RViewHolder<*, *>>() }
 
     companion object {
         private const val TAG = "RAdapter"
-    }
-
-    init {
-        registerAdapterDataObserver(DataObserver())
     }
 
     /**
@@ -26,7 +23,7 @@ class RAdapter(private val dataList: MutableList<*>) : RecyclerView.Adapter<RVie
      *
      * @param viewHolder ViewHolder
      */
-    inline fun <VH : ViewBinding, reified T> register(viewHolder: Class<out RViewHolder<VH, T>>): RAdapter {
+    inline fun <VB : ViewBinding, reified T> register(viewHolder: Class<out RViewHolder<VB, T>>): RAdapter {
         val dataClass = T::class.java
         register(dataClass) { viewHolder }
         return this
@@ -67,17 +64,17 @@ class RAdapter(private val dataList: MutableList<*>) : RecyclerView.Adapter<RVie
 
     @Suppress("UNCHECKED_CAST")
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RViewHolder<*, *> {
-        val clazz = typePool.getVHClass(viewType)
+        val clazz = typePool.getHolderClass(viewType)
         val viewHolder = createViewHolder(clazz as Class<RViewHolder<ViewBinding, Any>>, parent)
         viewHolder.setAdapter(this)
         return viewHolder
     }
 
-    private inline fun <reified VB : ViewBinding, T> createViewHolder(vhClass: Class<RViewHolder<VB, T>>, parent: ViewGroup): RViewHolder<VB, T> {
-        val bindingClass = (vhClass.genericSuperclass as ParameterizedType).actualTypeArguments[0] as Class<*>
+    private inline fun <reified VB : ViewBinding, T> createViewHolder(holderClass: Class<RViewHolder<VB, T>>, parent: ViewGroup): RViewHolder<VB, T> {
+        val bindingClass = (holderClass.genericSuperclass as ParameterizedType).actualTypeArguments[0] as Class<*>
         val inflateMethod = bindingClass.getMethod("inflate", LayoutInflater::class.java, ViewGroup::class.java, Boolean::class.javaPrimitiveType)
         val viewBinding = inflateMethod.invoke(null, LayoutInflater.from(parent.context), parent, false) as VB
-        val constructor = vhClass.getConstructor(bindingClass)
+        val constructor = holderClass.getConstructor(bindingClass)
         return constructor.newInstance(viewBinding)
     }
 
@@ -104,16 +101,26 @@ class RAdapter(private val dataList: MutableList<*>) : RecyclerView.Adapter<RVie
         return type
     }
 
+    override fun onAttachedToRecyclerView(recyclerView: RecyclerView) {
+        super.onAttachedToRecyclerView(recyclerView)
+        registerAdapterDataObserver(dataObserver)
+    }
+
+    override fun onDetachedFromRecyclerView(recyclerView: RecyclerView) {
+        super.onDetachedFromRecyclerView(recyclerView)
+        unregisterAdapterDataObserver(dataObserver)
+    }
+
     override fun onViewAttachedToWindow(holder: RViewHolder<*, *>) {
         super.onViewAttachedToWindow(holder)
         holder.onViewAttachedToWindow()
-        vhList.add(holder)
+        attachedHolderList.add(holder)
     }
 
     override fun onViewDetachedFromWindow(holder: RViewHolder<*, *>) {
         super.onViewDetachedFromWindow(holder)
         holder.onViewDetachedFromWindow()
-        vhList.remove(holder)
+        attachedHolderList.remove(holder)
     }
 
     /**
@@ -122,26 +129,26 @@ class RAdapter(private val dataList: MutableList<*>) : RecyclerView.Adapter<RVie
     private inner class DataObserver : RecyclerView.AdapterDataObserver() {
         override fun onItemRangeRemoved(positionStart: Int, itemCount: Int) {
             super.onItemRangeRemoved(positionStart, itemCount)
-            notifyVHPosExpired()
+            notifyHolderPosExpired()
         }
 
         override fun onItemRangeMoved(fromPosition: Int, toPosition: Int, itemCount: Int) {
             super.onItemRangeMoved(fromPosition, toPosition, itemCount)
-            notifyVHPosExpired()
+            notifyHolderPosExpired()
         }
 
         override fun onItemRangeInserted(positionStart: Int, itemCount: Int) {
             super.onItemRangeInserted(positionStart, itemCount)
-            notifyVHPosExpired()
+            notifyHolderPosExpired()
         }
     }
 
     /**
      * 数据顺序改变，通知 ViewHolder position 过期
      */
-    private fun notifyVHPosExpired() {
-        for (vh in vhList) {
-            vh.setPosExpired()
+    private fun notifyHolderPosExpired() {
+        for (holder in attachedHolderList) {
+            holder.setPosExpired()
         }
     }
 }
