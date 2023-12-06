@@ -2,6 +2,8 @@
 
 [![](https://jitpack.io/v/wangchenyan/radapter.svg)](https://jitpack.io/#wangchenyan/radapter)
 
+**[Deprecated]不再维护，请使用新版本[radapter3](https://github.com/wangchenyan/radapter3)**
+
 使用 radapter，你可以方便的构造多种类型的列表视图。
 
 ![](https://raw.githubusercontent.com/wangchenyan/radapter/master/art/recycler-view.jpg)
