@@ -2,7 +2,7 @@
 
 [![](https://jitpack.io/v/wangchenyan/radapter.svg)](https://jitpack.io/#wangchenyan/radapter)
 
-**[Deprecated]不再维护，请使用新版本[radapter3](https://github.com/wangchenyan/radapter3)**
+**⭐️⭐️⭐️ [推荐使用]支持 ViewBinding 的 [radapter3](https://github.com/wangchenyan/radapter3) 来啦！**
 
 使用 radapter，你可以方便的构造多种类型的列表视图。
 
